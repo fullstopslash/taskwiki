@@ -279,35 +279,22 @@ class VimwikiTask(object):
     def get_completed_mark(self):
         mark = self['completed_mark']
 
+        # Update mark based on task status
         if self.task.completed:
             if self['completed_mark'] == 'x':
                 mark = 'x'
-            elif mark == 'x':
-                mark = ' '
             elif self['completed_mark'] == 'X':
                 mark = 'X'
-            elif mark == 'X':
+            else:
                 mark = ' '
-
         if self.task.active:
             mark = 'S'
-        elif mark == 'S':
-            mark = ' '
-
         if self.task.deleted:
             mark = 'D'
-        elif mark == 'D':
-            mark = ' '
-
         if self.task.recurring:
             mark = 'R'
-        elif mark == 'R':
-            mark = ' '
-
         if self.task.waiting:
             mark = 'W'
-        elif mark == 'W':
-            mark = ' '
 
         return mark
 
