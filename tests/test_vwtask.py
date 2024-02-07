@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from tasklib import local_zone
+from taskwiki.util import uuid_char
 from tests.base import IntegrationTest, MultipleSourceTest
 
 
@@ -11,7 +13,7 @@ class TestSimpleTaskCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -28,11 +30,11 @@ class TestSimpleTaskCreation(IntegrationTest):
 class TestInvalidUUIDTask(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task  #abc123ef
+    * [ ] This is a test task  """+uuid_char+"""abc123ef
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -49,11 +51,11 @@ class TestInvalidUUIDTask(IntegrationTest):
 class TestSimpleTaskModification(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a modified task  #{uuid}
+    * [ ] This is a modified task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -79,11 +81,11 @@ class TestSimpleTaskModification(IntegrationTest):
 class TestBufferTaskCompletion(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [X] This is a test task  #{uuid}
+    * [X] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -111,11 +113,11 @@ class TestBufferTaskCompletion(IntegrationTest):
 class TestBufferTaskUncompletion(IntegrationTest):
 
     viminput = """
-    * [X] This is a test task  #{uuid}
+    * [X] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -143,11 +145,11 @@ class TestBufferTaskUncompletion(IntegrationTest):
 class TestBufferTaskDeletion(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [D] This is a test task  #{uuid}
+    * [D] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -175,11 +177,11 @@ class TestBufferTaskDeletion(IntegrationTest):
 class TestBufferTaskUndeletion(IntegrationTest):
 
     viminput = """
-    * [D] This is a test task  #{uuid}
+    * [D] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -207,11 +209,11 @@ class TestBufferTaskUndeletion(IntegrationTest):
 class TestBufferTaskActivation(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [S] This is a test task  #{uuid}
+    * [S] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -240,11 +242,11 @@ class TestBufferTaskActivation(IntegrationTest):
 class TestBufferTaskDeactivation(IntegrationTest):
 
     viminput = """
-    * [S] This is a test task  #{uuid}
+    * [S] This is a test task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -277,7 +279,7 @@ class TestSimpleTaskWithDueDatetimeCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is a test task (2015-03-03 12:00)  #{uuid}
+    * [ ] This is a test task (2015-03-03 12:00)  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -291,7 +293,7 @@ class TestSimpleTaskWithDueDatetimeCreation(IntegrationTest):
         task = self.tw.tasks.pending()[0]
         assert task['description'] == 'This is a test task'
         assert task['status'] == 'pending'
-        assert task['due'] == due.astimezone()
+        assert task['due'] == local_zone.localize(due)
 
 
 class TestSimpleTaskWithFlawedDueDatetimeCreation(IntegrationTest):
@@ -301,7 +303,7 @@ class TestSimpleTaskWithFlawedDueDatetimeCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is a test task  #{uuid}
+    * [ ] This is a test task  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -323,7 +325,7 @@ class TestSimpleTaskWithDueDateCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is a test task (2015-03-03)  #{uuid}
+    * [ ] This is a test task (2015-03-03)  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -337,17 +339,17 @@ class TestSimpleTaskWithDueDateCreation(IntegrationTest):
         task = self.tw.tasks.pending()[0]
         assert task['description'] == 'This is a test task'
         assert task['status'] == 'pending'
-        assert task['due'] == due.astimezone()
+        assert task['due'] == local_zone.localize(due)
 
 
 class TestSimpleTaskWithDueDatetimeModification(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task (2015-03-03 12:00)  #{uuid}
+    * [ ] This is a test task (2015-03-03 12:00)  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a test task (2015-03-04 13:00)  #{uuid}
+    * [ ] This is a test task (2015-03-04 13:00)  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -372,7 +374,7 @@ class TestSimpleTaskWithDueDatetimeModification(IntegrationTest):
         task = self.tw.tasks.pending()[0]
         assert task['description'] == 'This is a test task'
         assert task['status'] == 'pending'
-        assert task['due'] == due.astimezone()
+        assert task['due'] == local_zone.localize(due)
 
 
 class TestSimpleTaskWithPriorityCreation(IntegrationTest):
@@ -382,7 +384,7 @@ class TestSimpleTaskWithPriorityCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is a test task !!  #{uuid}
+    * [ ] This is a test task !!  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -400,11 +402,11 @@ class TestSimpleTaskWithPriorityCreation(IntegrationTest):
 class TestSimpleTaskWithPriorityModification(IntegrationTest):
 
     viminput = """
-    * [ ] This is a test task !!!  #{uuid}
+    * [ ] This is a test task !!!  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is a test task !  #{uuid}
+    * [ ] This is a test task !  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -437,8 +439,8 @@ class TestChildTaskCreation(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is parent task  #{uuid}
-      * [ ] This is child task  #{uuid}
+    * [ ] This is parent task  """+uuid_char+"""{uuid}
+      * [ ] This is child task  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -464,9 +466,9 @@ class TestChildTaskCreationLimit(IntegrationTest):
     """
 
     vimoutput = """
-    * [ ] This is not a parent task  #{uuid}
+    * [ ] This is not a parent task  """+uuid_char+"""{uuid}
     * This is the parent entry
-      * [ ] This is not a child task  #{uuid}
+      * [ ] This is not a child task  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -481,13 +483,13 @@ class TestChildTaskCreationLimit(IntegrationTest):
 class TestChildTaskModification(IntegrationTest):
 
     viminput = """
-    * [ ] This is parent task  #{uuid}
-    * [ ] This is child task  #{uuid}
+    * [ ] This is parent task  """+uuid_char+"""{uuid}
+    * [ ] This is child task  """+uuid_char+"""{uuid}
     """
 
     vimoutput = """
-    * [ ] This is parent task  #{uuid}
-      * [ ] This is child task  #{uuid}
+    * [ ] This is parent task  """+uuid_char+"""{uuid}
+      * [ ] This is child task  """+uuid_char+"""{uuid}
     """
 
     tasks = [
@@ -522,7 +524,7 @@ class TestChildTaskModification(IntegrationTest):
 class TestCreationDifferentTaskSource(MultipleSourceTest):
 
     viminput = """
-    * [ ] This is first data source task  #H:
+    * [ ] This is first data source task  """+uuid_char+"""H:
     """
 
     def execute(self):
@@ -540,7 +542,7 @@ class TestSimpleUnicodeTaskCreation(IntegrationTest):
     """
 
     vimoutput = u"""
-    * [ ] This is a test täsk  #{uuid}
+    * [ ] This is a test täsk  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
@@ -565,8 +567,8 @@ class TestLineNumberPreservation(IntegrationTest):
 
     vimoutput = """
     My tasks for today:
-    * [ ] Wake up  #{uuid}
-    * [ ] Go to sleep in time  #{uuid}
+    * [ ] Wake up  """+uuid_char+"""{uuid}
+    * [ ] Go to sleep in time  """+uuid_char+"""{uuid}
     """
 
     def execute(self):
